@@ -18,7 +18,7 @@ class DocRaptor {
 			$this->api_key = $api_key;
 		}
 		$this->test = false;
-		$this->setDocumentType();
+		$this->setDocumentType('pdf');
 		return true;
 	}
 	
