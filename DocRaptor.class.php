@@ -36,7 +36,7 @@ class DocRaptor {
 	
 	public function setDocumentType($document_type){
 		$document_type = strtolower($document_type);
-		$type = $document_type == 'pdf' || $document_type == 'xls' ? $document_type : 'pdf';
+		$this->type = $document_type == 'pdf' || $document_type == 'xls' ? $document_type : 'pdf';
 		return true;
 	}
 	
@@ -55,7 +55,7 @@ class DocRaptor {
 			$url = "https://docraptor.com/docs?user_credentials=".$this->api_key;
 			$fields = array(
 				'doc[document_content]'=>urlencode($this->document_content),
-				'doc[document_type]'=>$this->document_type,
+				'doc[document_type]'=>$this->type,
 				'doc[name]'=>$this->name,
 				'doc[test]'=>$this->test
 			);
