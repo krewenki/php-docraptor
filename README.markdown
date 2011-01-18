@@ -6,7 +6,7 @@ PHP-DocRaptor is a simple consumer class for [DocRaptor.com](http://www.docrapto
 You will need a DocRaptor account before you can use the class, as it requires a valid API key.
 
 ###Usage
-    $docraptor = new DocRaptor(YOR_API_KEY);
+    $docraptor = new DocRaptor(YOUR_API_KEY);
     $docraptor->setDocumentContent('<h1>Hello!</h1>');
     $docraptor->setDocumentType('pdf');
     $docraptor->setTest(true);
