@@ -7,11 +7,11 @@
  **/
 class DocRaptor {
 	
-	public $api_key;
-	public $document_content;
-	public $document_type;
-	public $name;
-	public $test;
+	protected $api_key;
+	protected $document_content;
+	protected $document_type;
+	protected $name;
+	protected $test;
 	
 	public function __construct($api_key=null){
 		if(!is_null($api_key)){
@@ -26,28 +26,28 @@ class DocRaptor {
 		if(!is_null($api_key)){
 			$this->api_key = $api_key;
 		}
-		return true;
+		return $this;
 	}
 	
 	public function setDocumentContent($document_content=null){
 		$this->document_content = $document_content;
-		return true;
+		return $this;
 	}
 	
 	public function setDocumentType($document_type){
 		$document_type = strtolower($document_type);
 		$this->type = $document_type == 'pdf' || $document_type == 'xls' ? $document_type : 'pdf';
-		return true;
+		return $this;
 	}
 	
 	public function setName($name){
 		$this->name = $name;
-		return true;
+		return $this;
 	}
 	
 	public function setTest($test=false){
 		$this->test = (bool)$test;
-		return true;
+		return $this;
 	}
 	
 	public function fetchDocument($filename = false){
