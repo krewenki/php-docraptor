@@ -21,6 +21,7 @@ class DocRaptor {
 		}
 		$this->test = false;
 		$this->setDocumentType('pdf');
+		$this->setSecure('false');
 		return true;
 	}
 	
@@ -58,7 +59,7 @@ class DocRaptor {
 	}
 	
 	public function setSecure($secure_url=false){
-		$this->url_protocol = $secure_url ? 'https' : 'http';
+		$this->url_protocol = $secure_url ? 'http' : 'https';
 		return $this;
 	}
 	
