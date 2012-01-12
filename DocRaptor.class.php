@@ -82,7 +82,7 @@ class DocRaptor {
 					file_put_contents($filename,$result);
 				}
 			} else {
-				echo 'error';
+				echo ('Error: ' . curl_error($ch));
 			}
 			//close connection 
 			curl_close($ch);
