@@ -13,6 +13,7 @@ class DocRaptor {
 	protected $document_type;
 	protected $name;
 	protected $test;
+	protected $url_protocol;
 	
 	public function __construct($api_key=null){
 		if(!is_null($api_key)){
@@ -56,9 +57,14 @@ class DocRaptor {
 		return $this;
 	}
 	
+	public function setSecure($secure_url=false){
+		$this->url_protocol = $secure_url ? 'https' : 'http';
+		return $this;
+	}
+	
 	public function fetchDocument($filename = false){
 		if($this->api_key != ''){
-			$url = "https://docraptor.com/docs?user_credentials=".$this->api_key;
+			$url = $this->url_protocol . '://docraptor.com/docs?user_credentials=' . $this->api_key;
 			$fields = array(
 				'doc[document_type]'=>$this->type,
 				'doc[name]'=>$this->name,
