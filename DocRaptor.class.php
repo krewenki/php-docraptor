@@ -59,7 +59,7 @@ class DocRaptor {
 	}
 	
 	public function setSecure($secure_url=false){
-		$this->url_protocol = $secure_url ? 'http' : 'https';
+		$this->url_protocol = $secure_url ? 'https' : 'http';
 		return $this;
 	}
 	
