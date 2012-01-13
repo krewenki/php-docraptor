@@ -3,6 +3,7 @@
 /**
  * DocRaptor
  *
+ *
  * @author Warren Krewenki
  **/
 class DocRaptor {
@@ -21,7 +22,7 @@ class DocRaptor {
 		}
 		$this->test = false;
 		$this->setDocumentType('pdf');
-		$this->setSecure('false');
+		$this->setSecure(false);
 		return true;
 	}
 	
