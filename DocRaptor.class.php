@@ -23,7 +23,7 @@ class DocRaptor {
 		}
 		$this->test = false;
 		$this->setDocumentType('pdf');
-		$this->setSecure(false);
+		$this->setSecure(true);
 		return true;
 	}
 	
