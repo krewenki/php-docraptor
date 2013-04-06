@@ -12,3 +12,11 @@ You will need a DocRaptor account before you can use the class, as it requires a
 
 Optionally, the fetchDocument() method takes a filename as an argument.  If you provide
 a filename, the class will attempt to write the returned value to the file you provided.
+
+###Options
+
+####HTTPS or HTTP
+By default, PHP-DocRaptor submits requests over https.  You can choose to submit via http, if that's your preference, by passing an argument to the *setSecure()* method (true for https, false for http):
+
+	$docraptor = new DocRaptor(YOUR_API_KEY);
+	$docraptor->setSecure(false)
