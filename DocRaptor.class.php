@@ -3,6 +3,7 @@
 /**
  * DocRaptor
  *
+ *
  * @author Warren Krewenki
  **/
 class DocRaptor {
@@ -13,6 +14,8 @@ class DocRaptor {
 	protected $document_type;
 	protected $name;
 	protected $test;
+	protected $url_protocol;
+	protected $base_url;
 	
 	public function __construct($api_key=null){
 		if(!is_null($api_key)){
@@ -20,6 +23,7 @@ class DocRaptor {
 		}
 		$this->test = false;
 		$this->setDocumentType('pdf');
+		$this->setSecure(false);
 		return true;
 	}
 	
@@ -56,14 +60,26 @@ class DocRaptor {
 		return $this;
 	}
 	
+	public function setSecure($secure_url=false){
+		$this->url_protocol = $secure_url ? 'https' : 'http';
+		return $this;
+	}
+	public function setBaseUrl($base_url){
+		$this->base_url = $base_url;
+		return $this;
+	}
+	
 	public function fetchDocument($filename = false){
 		if($this->api_key != ''){
-			$url = "https://docraptor.com/docs?user_credentials=".$this->api_key;
+			$url = $this->url_protocol . '://docraptor.com/docs?user_credentials=' . $this->api_key;
 			$fields = array(
 				'doc[document_type]'=>$this->type,
 				'doc[name]'=>$this->name,
 				'doc[test]'=>$this->test
 			);
+			if ( !empty($this->base_url)){
+				$fields['doc[prince_options][base_url]'] = $this->base_url;
+			}
 			if ( !empty($this->document_content) ){
 				$fields['doc[document_content]'] = urlencode($this->document_content);
 			} else {
@@ -82,7 +98,7 @@ class DocRaptor {
 					file_put_contents($filename,$result);
 				}
 			} else {
-				echo 'error';
+				echo ('Error: ' . curl_error($ch));
 			}
 			//close connection 
 			curl_close($ch);
