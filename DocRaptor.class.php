@@ -83,7 +83,8 @@ class DocRaptor {
       $fields = array(
         'doc[document_type]'=>$this->type,
         'doc[name]'=>$this->name,
-        'doc[test]'=>$this->test
+        'doc[test]'=>$this->test,
+        'doc[strict]'=>$this->strict
       );
       if ( !empty($this->base_url)){
         $fields['doc[prince_options][base_url]'] = $this->base_url;
