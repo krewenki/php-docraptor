@@ -25,7 +25,7 @@ class DocRaptor {
     $this->test = false;
     $this->setDocumentType('pdf');
     $this->setSecure(true);
-    $this->setStrict('html')
+    $this->setStrict('html');
     return true;
   }
 
