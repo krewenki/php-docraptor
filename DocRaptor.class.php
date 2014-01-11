@@ -94,6 +94,12 @@ class DocRaptor {
 			curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
 			curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
 			if($result = curl_exec($ch)) {
+				$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+				
+				if ($http_code != 200) {
+					return False;
+				}
+
 				if($filename){
 					file_put_contents($filename,$result);
 				}
