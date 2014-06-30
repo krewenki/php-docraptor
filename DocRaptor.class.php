@@ -14,6 +14,7 @@ class DocRaptor {
 	protected $document_type;
 	protected $name;
 	protected $test;
+	protected $help;
 	protected $url_protocol;
 	protected $base_url;
 
@@ -22,6 +23,7 @@ class DocRaptor {
 			$this->api_key = $api_key;
 		}
 		$this->test = false;
+		$this->help = false;
 		$this->setDocumentType('pdf');
 		$this->setSecure(true);
 		return true;
@@ -60,6 +62,11 @@ class DocRaptor {
 		return $this;
 	}
 
+	public function setHelp($help=false){
+		$this->help = (bool)$help;
+		return $this;
+	}
+
 	public function setSecure($secure_url=false){
 		$this->url_protocol = $secure_url ? 'https' : 'http';
 		return $this;
@@ -75,6 +82,7 @@ class DocRaptor {
 			$fields = array(
 				'doc[document_type]'=>$this->type,
 				'doc[name]'=>$this->name,
+				'doc[help]'=>$this->help,
 				'doc[test]'=>$this->test
 			);
 			if ( !empty($this->base_url)){
