@@ -1,0 +1,17 @@
+{
+    "name": "expectedbehavior/php-docraptor",
+    "description": "Official PHP wrapper for the DocRaptor API.",
+    "keywords": ["princexml", "php", "pdf", "xhtml", "xls", "xlsx", "docraptor"],
+    "homepage": "https://github.com/expectedbehavior/php-docraptor",
+    "type": "library",
+    "version": "dev",
+    "license": "New BSD",
+    "require": {
+        "php": ">=5.5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "DocRaptor\\": "src/"
+        }
+    }
+}
