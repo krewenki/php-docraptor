@@ -1,12 +1,10 @@
-<?php
+<?php namespace DocRaptor;
 
 /**
- * DocRaptor
- *
- *
- * @author Warren Krewenki
- **/
-class DocRaptor {
+ * Class ApiWrapper
+ * @package DocRaptor
+ */
+class ApiWrapper {
 
   protected $api_key;
   protected $document_content;
@@ -133,5 +131,3 @@ class DocRaptor {
 
   }
 }
-
-?>
