@@ -1,6 +1,6 @@
 #PHP-DocRaptor
 
-PHP-DocRaptor is a simple API wrapper for [DocRaptor.com](http://www.docraptor.com)
+PHP-DocRaptor is a simple API wrapper for [DocRaptor.com](https://docraptor.com/).
 You will need a DocRaptor account before you can use this library, as it requires a valid API key.
 
 ##Installation
