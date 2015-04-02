@@ -14,9 +14,15 @@ This library is PSR-4 autoloading compliant, you can install it via composer. Ju
 ... and run `composer update` resp. `composer install`.
 
 ##Usage
-    $docraptor = new DocRaptor(YOUR_API_KEY);
-    $docraptor->setDocumentContent('<h1>Hello!</h1>')->setDocumentType('pdf')->setTest(true)->setName('output.pdf');
-    $file = $docraptor->fetchDocument();
+Import the namespace.
+
+    use DocRaptor\ApiWrapper;
+
+Use the wrapper.
+
+    $docRaptor = new ApiWrapper($api_key);
+    $docRaptor->setDocumentContent('<h1>Hello!</h1>')->setDocumentType('pdf')->setTest(true)->setName('output.pdf');
+    $file = $docRaptor->fetchDocument();
 
 Optionally, the fetchDocument() method takes a filename as an argument.  If you provide
 a filename, the class will attempt to write the returned value to the file you provided.
