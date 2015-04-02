@@ -10,41 +10,37 @@ class ApiWrapper
 {
 
     protected $api_key;
+    protected $api_url          = 'docraptor.com/docs';
+    protected $name;
+    protected $test             = false;
+    protected $strict           = 'none';
+    protected $help             = false;
+    protected $url_protocol     = 'https';
+    protected $base_url;
     protected $document_content;
     protected $document_url;
-    protected $document_type;
-    protected $name;
-    protected $test;
-    protected $strict;
-    protected $help;
-    protected $url_protocol;
-    protected $base_url;
+    protected $document_type    = 'pdf';
+
 
     /**
      * @param string|null $api_key
+     *
+     * @todo the null check does not really seem needed here, the object will be constructed once per request cycle
      */
     public function __construct($api_key = null)
     {
         if (!is_null($api_key)) {
             $this->api_key = $api_key;
         }
-        $this->test = false;
-        $this->setStrict('none');
-        $this->help = false;
-        $this->setDocumentType('pdf');
-        $this->setSecure(true);
-        return true;
     }
 
     /**
-     * @param string|null $api_key
+     * @param string $api_key
      * @return $this
      */
-    public function setAPIKey($api_key = null)
+    public function setAPIKey($api_key)
     {
-        if (!is_null($api_key)) {
-            $this->api_key = $api_key;
-        }
+        $this->api_key = $api_key;
         return $this;
     }
 
@@ -71,10 +67,19 @@ class ApiWrapper
     /**
      * @param string $document_type
      * @return $this
+     * @throws Exception
      */
     public function setDocumentType($document_type)
     {
+        $allowedValues = array('xls', 'xlsx', 'pdf');
+
+        if (! in_array(strtolower(trim($document_type)), $allowedValues)) {
+            throw new Exception('Value not accepted by method.');
+        }
+
         $document_type = strtolower($document_type);
+
+        //@todo why is xls cast to pdf?
         $this->type = $document_type == 'pdf' || $document_type == 'xls' ? $document_type : 'pdf';
         return $this;
     }
@@ -112,7 +117,7 @@ class ApiWrapper
     {
         $allowedValues = array('none', 'html');
 
-        if (! in_array($strict, $allowedValues)) {
+        if (! in_array(strtolower(trim($strict)), $allowedValues)) {
             throw new Exception('Value not accepted by method.');
         }
 
@@ -155,11 +160,12 @@ class ApiWrapper
      *
      * @param bool|string $filename
      * @return bool|mixed
+     * @throws Exception
      */
     public function fetchDocument($filename = false)
     {
         if ($this->api_key != '') {
-            $url = $this->url_protocol . '://docraptor.com/docs?user_credentials=' . $this->api_key;
+            $url = $this->url_protocol . '://'. $this->api_url . '?user_credentials=' . $this->api_key;
             $fields = array(
                 'doc[document_type]' => $this->document_type,
                 'doc[name]'          => $this->name,
@@ -185,12 +191,14 @@ class ApiWrapper
             curl_setopt($ch, CURLOPT_POST, count($fields));
             curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $result = curl_exec($ch);
 
-            if ($result = curl_exec($ch)) {
+            if ($result) {
                 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
                 if ($http_code != 200) {
-                    return False;
+                    //@todo silently erroring out is probably not the best way here
+                    return false;
                 }
 
                 if ($filename) {
@@ -198,10 +206,9 @@ class ApiWrapper
                 }
 
             } else {
-                echo('Error: ' . curl_error($ch));
+                throw new Exception('Curl error: ' . curl_error($ch));
             }
 
-            //close connection
             curl_close($ch);
 
             return $filename ? true : $result;
