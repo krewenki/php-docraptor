@@ -78,9 +78,6 @@ class ApiWrapper
         }
 
         $document_type = strtolower($document_type);
-
-        //@todo why is xls cast to pdf?
-        $this->type = $document_type == 'pdf' || $document_type == 'xls' ? $document_type : 'pdf';
         return $this;
     }
 
