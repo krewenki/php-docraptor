@@ -1,5 +1,7 @@
 <?php namespace DocRaptor;
 
+use Exception;
+
 /**
  * Class ApiWrapper
  * @package DocRaptor
@@ -18,6 +20,9 @@ class ApiWrapper
     protected $url_protocol;
     protected $base_url;
 
+    /**
+     * @param string|null $api_key
+     */
     public function __construct($api_key = null)
     {
         if (!is_null($api_key)) {
@@ -31,6 +36,10 @@ class ApiWrapper
         return true;
     }
 
+    /**
+     * @param string|null $api_key
+     * @return $this
+     */
     public function setAPIKey($api_key = null)
     {
         if (!is_null($api_key)) {
@@ -39,18 +48,30 @@ class ApiWrapper
         return $this;
     }
 
+    /**
+     * @param string|null $document_content
+     * @return $this
+     */
     public function setDocumentContent($document_content = null)
     {
         $this->document_content = $document_content;
         return $this;
     }
 
+    /**
+     * @param string $document_url
+     * @return $this
+     */
     public function setDocumentUrl($document_url)
     {
         $this->document_url = $document_url;
         return $this;
     }
 
+    /**
+     * @param string $document_type
+     * @return $this
+     */
     public function setDocumentType($document_type)
     {
         $document_type = strtolower($document_type);
@@ -58,52 +79,89 @@ class ApiWrapper
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @return $this
+     */
     public function setName($name)
     {
         $this->name = $name;
         return $this;
     }
 
+    /**
+     * @param bool $test
+     * @return $this
+     */
     public function setTest($test = false)
     {
         $this->test = (bool)$test;
         return $this;
     }
 
-    # values should be one of 'html' or 'none'
-    #   'none' - (default) skip input validation on the DR side
-    #   'html' - perform validation on the input html on the DR side and
-    #            error if non-parseable input provided
+    /**
+     * Toggle validation of HTML by DocRaptor
+     *
+     * @todo should probably just be a bool flag
+     *
+     * @param string $strict none: no validation, html: errors out on non-parsable markup
+     * @return $this
+     * @throws Exception
+     */
     public function setStrict($strict = 'none')
     {
+        $allowedValues = array('none', 'html');
+
+        if (! in_array($strict, $allowedValues)) {
+            throw new Exception('Value not accepted by method.');
+        }
+
         $this->strict = $strict;
         return $this;
     }
 
+    /**
+     * @param bool $help
+     * @return $this
+     */
     public function setHelp($help = false)
     {
         $this->help = (bool)$help;
         return $this;
     }
 
+    /**
+     * @param bool $secure_url
+     * @return $this
+     */
     public function setSecure($secure_url = false)
     {
         $this->url_protocol = $secure_url ? 'https' : 'http';
         return $this;
     }
 
+    /**
+     * @param string $base_url
+     * @return $this
+     */
     public function setBaseUrl($base_url)
     {
         $this->base_url = $base_url;
         return $this;
     }
 
+    /**
+     * Main method that makes the actual API call
+     *
+     * @param bool|string $filename
+     * @return bool|mixed
+     */
     public function fetchDocument($filename = false)
     {
         if ($this->api_key != '') {
             $url = $this->url_protocol . '://docraptor.com/docs?user_credentials=' . $this->api_key;
             $fields = array(
-                'doc[document_type]' => $this->type,
+                'doc[document_type]' => $this->document_type,
                 'doc[name]'          => $this->name,
                 'doc[help]'          => $this->help,
                 'doc[test]'          => $this->test,
@@ -148,5 +206,7 @@ class ApiWrapper
 
             return $filename ? true : $result;
         }
+
+        return false;
     }
 }
