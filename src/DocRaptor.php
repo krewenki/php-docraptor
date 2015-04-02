@@ -202,30 +202,29 @@ class ApiWrapper
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $result = curl_exec($ch);
 
-            if ($result) {
-                $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-                if ($httpStatusCode != 200) {
-                    switch ($httpStatusCode) {
-                        case 400:
-                            throw new BadRequestException();
-                        case 401:
-                            throw new UnauthorizedException();
-                        case 403:
-                            throw new ForbiddenException();
-                        case 422:
-                            throw new UnprocessableEntityException();
-                        default:
-                            throw new UnexpectedValueException($httpStatusCode);
-                    }
-                }
-
-                if ($filename) {
-                    file_put_contents($filename, $result);
-                }
-
-            } else {
+            if (!$result) {
                 throw new Exception('Curl error: ' . curl_error($ch));
+            }
+
+            $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            if ($httpStatusCode != 200) {
+                switch ($httpStatusCode) {
+                    case 400:
+                        throw new BadRequestException();
+                    case 401:
+                        throw new UnauthorizedException();
+                    case 403:
+                        throw new ForbiddenException();
+                    case 422:
+                        throw new UnprocessableEntityException();
+                    default:
+                        throw new UnexpectedValueException($httpStatusCode);
+                }
+            }
+
+            if ($filename) {
+                file_put_contents($filename, $result);
             }
 
             curl_close($ch);
