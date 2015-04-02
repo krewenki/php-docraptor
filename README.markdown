@@ -32,5 +32,6 @@ a filename, the class will attempt to write the returned value to the file you p
 ###HTTPS or HTTP
 By default, PHP-DocRaptor submits requests over https.  You can choose to submit via http, if that's your preference, by passing an argument to the *setSecure()* method (true for https, false for http):
 
-	$docraptor = new DocRaptor(YOUR_API_KEY);
-	$docraptor->setSecure(false)
+	$docRaptor->setSecure(false);
+	
+NB! It IS not secure, you're basically broadcasting your api key over the network.
