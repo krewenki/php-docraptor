@@ -1,6 +1,11 @@
 <?php namespace DocRaptor;
 
 use Exception;
+use DocRaptor\Exception\BadRequestException;
+use DocRaptor\Exception\ForbiddenException;
+use DocRaptor\Exception\UnauthorizedException;
+use DocRaptor\Exception\UnexpectedValueException;
+use DocRaptor\Exception\UnprocessableEntityException;
 
 /**
  * Class ApiWrapper
@@ -24,8 +29,6 @@ class ApiWrapper
 
     /**
      * @param string|null $api_key
-     *
-     * @todo the null check does not really seem needed here, the object will be constructed once per request cycle
      */
     public function __construct($api_key = null)
     {
@@ -71,13 +74,14 @@ class ApiWrapper
      */
     public function setDocumentType($document_type)
     {
+        $document_type_filtered = strtolower(trim($document_type));
         $allowedValues = array('xls', 'xlsx', 'pdf');
 
-        if (! in_array(strtolower(trim($document_type)), $allowedValues)) {
+        if (! in_array($document_type_filtered, $allowedValues)) {
             throw new Exception('Value not accepted by method.');
         }
 
-        $document_type = strtolower($document_type);
+        $this->document_type = $document_type_filtered;
         return $this;
     }
 
@@ -158,12 +162,20 @@ class ApiWrapper
      * @param bool|string $filename
      * @return bool|mixed
      * @throws Exception
+     * @throws BadRequestException
+     * @throws ForbiddenException
+     * @throws UnauthorizedException
+     * @throws UnexpectedValueException
+     * @throws UnprocessableEntityException
      */
     public function fetchDocument($filename = false)
     {
         if ($this->api_key != '') {
-            $url = $this->url_protocol . '://'. $this->api_url . '?user_credentials=' . $this->api_key;
+
+            $uri = sprintf('%s://%s', $this->url_protocol, $this->api_url);
+
             $fields = array(
+                'user_credentials'   => $this->api_key,
                 'doc[document_type]' => $this->document_type,
                 'doc[name]'          => $this->name,
                 'doc[help]'          => $this->help,
@@ -176,34 +188,43 @@ class ApiWrapper
             }
 
             if (!empty($this->document_content)) {
-                $fields['doc[document_content]'] = urlencode($this->document_content);
+                $fields['doc[document_content]'] = $this->document_content;
             } else {
-                $fields['doc[document_url]'] = urlencode($this->document_url);
+                $fields['doc[document_url]'] = $this->document_url;
             }
 
-            $fields_string = http_build_query($fields);
+            $queryString = http_build_query($fields);
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_URL, $uri);
             curl_setopt($ch, CURLOPT_POST, count($fields));
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $queryString);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $result = curl_exec($ch);
 
-            if ($result) {
-                $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-                if ($http_code != 200) {
-                    //@todo silently erroring out is probably not the best way here
-                    return false;
-                }
-
-                if ($filename) {
-                    file_put_contents($filename, $result);
-                }
-
-            } else {
+            if (!$result) {
                 throw new Exception('Curl error: ' . curl_error($ch));
+            }
+
+            $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            if ($httpStatusCode != 200) {
+                switch ($httpStatusCode) {
+                    case 400:
+                        throw new BadRequestException();
+                    case 401:
+                        throw new UnauthorizedException();
+                    case 403:
+                        throw new ForbiddenException();
+                    case 422:
+                        throw new UnprocessableEntityException();
+                    default:
+                        throw new UnexpectedValueException($httpStatusCode);
+                }
+            }
+
+            if ($filename) {
+                file_put_contents($filename, $result);
             }
 
             curl_close($ch);
