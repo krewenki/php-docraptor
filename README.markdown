@@ -5,13 +5,13 @@ You will need a DocRaptor account before you can use this library, as it require
 
 ##Installation
 
-This library is PSR-4 autoloading compliant, you can install it via composer. Just require it in your `composer.json` ...
+This library is PSR-4 autoloading compliant, you can install it via composer. Just require it in your `composer.json`.
 
     "require": {
         "expectedbehavior/php-docraptor": "dev-master"
     }
     
-... and run `composer update` resp. `composer install`.
+Then run `composer update` resp. `composer install`.
 
 ##Usage
 Import the namespace.
