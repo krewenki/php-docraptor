@@ -203,70 +203,69 @@ class ApiWrapper
      */
     public function fetchDocument($filename = false)
     {
-        if ($this->api_key != '') {
-
-            $uri = sprintf('%s://%s', $this->url_protocol, $this->api_url);
-
-            $fields = array(
-                'user_credentials'   => $this->api_key,
-                'doc[document_type]' => $this->document_type,
-                'doc[name]'          => $this->name,
-                'doc[tag]'           => $this->tag,
-                'doc[help]'          => $this->help,
-                'doc[test]'          => $this->test,
-                'doc[strict]'        => $this->strict,
-                'doc[javascript]'    => $this->javascript,
-            );
-
-            if (!empty($this->baseurl)) {
-                $fields['doc[prince_options][baseurl]'] = $this->baseurl;
-            }
-
-            if (!empty($this->document_content)) {
-                $fields['doc[document_content]'] = $this->document_content;
-            } else {
-                $fields['doc[document_url]'] = $this->document_url;
-            }
-
-            $queryString = http_build_query($fields);
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $uri);
-            curl_setopt($ch, CURLOPT_POST, count($fields));
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $queryString);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $result = curl_exec($ch);
-
-            if (!$result) {
-                throw new Exception(sprintf('Curl error: %s', curl_error($ch)));
-            }
-
-            $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-            if ($httpStatusCode != 200) {
-                switch ($httpStatusCode) {
-                    case 400:
-                        throw new BadRequestException();
-                    case 401:
-                        throw new UnauthorizedException();
-                    case 403:
-                        throw new ForbiddenException();
-                    case 422:
-                        throw new UnprocessableEntityException();
-                    default:
-                        throw new UnexpectedValueException($httpStatusCode);
-                }
-            }
-
-            if ($filename) {
-                file_put_contents($filename, $result);
-            }
-
-            curl_close($ch);
-
-            return $filename ? true : $result;
+        if (!$this->api_key) {
+            throw new MissingAPIKeyException();
         }
 
-        return false;
+        $uri = sprintf('%s://%s', $this->url_protocol, $this->api_url);
+
+        $fields = array(
+            'user_credentials'   => $this->api_key,
+            'doc[document_type]' => $this->document_type,
+            'doc[name]'          => $this->name,
+            'doc[tag]'           => $this->tag,
+            'doc[help]'          => $this->help,
+            'doc[test]'          => $this->test,
+            'doc[strict]'        => $this->strict,
+            'doc[javascript]'    => $this->javascript,
+        );
+
+        if (!empty($this->baseurl)) {
+            $fields['doc[prince_options][baseurl]'] = $this->baseurl;
+        }
+
+        if (!empty($this->document_content)) {
+            $fields['doc[document_content]'] = $this->document_content;
+        } else {
+            $fields['doc[document_url]'] = $this->document_url;
+        }
+
+        $queryString = http_build_query($fields);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $uri);
+        curl_setopt($ch, CURLOPT_POST, count($fields));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $queryString);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+
+        if (!$result) {
+            throw new Exception(sprintf('Curl error: %s', curl_error($ch)));
+        }
+
+        $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($httpStatusCode != 200) {
+            switch ($httpStatusCode) {
+                case 400:
+                    throw new BadRequestException();
+                case 401:
+                    throw new UnauthorizedException();
+                case 403:
+                    throw new ForbiddenException();
+                case 422:
+                    throw new UnprocessableEntityException();
+                default:
+                    throw new UnexpectedValueException($httpStatusCode);
+            }
+        }
+
+        if ($filename) {
+            file_put_contents($filename, $result);
+        }
+
+        curl_close($ch);
+
+        return $filename ? true : $result;
     }
 }
