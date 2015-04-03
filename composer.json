@@ -6,8 +6,12 @@
     "type": "library",
     "version": "dev",
     "license": "New BSD",
+    "require-dev": {
+        "phpunit/phpunit": "4.5.*"
+    },
     "require": {
-        "php": ">=5.5.0"
+        "php": ">=5.5.0",
+        "ext-curl": "*"
     },
     "autoload": {
         "psr-4": {
