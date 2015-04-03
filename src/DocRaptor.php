@@ -6,6 +6,7 @@ use DocRaptor\Exception\ForbiddenException;
 use DocRaptor\Exception\UnauthorizedException;
 use DocRaptor\Exception\UnexpectedValueException;
 use DocRaptor\Exception\UnprocessableEntityException;
+use InvalidArgumentException;
 
 /**
  * Class ApiWrapper
@@ -52,10 +53,18 @@ class ApiWrapper
      * @param string $api_key
      * @return $this
      */
-    public function setAPIKey($api_key)
+    public function setApiKey($api_key)
     {
         $this->api_key = $api_key;
         return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getApiKey()
+    {
+        return $this->api_key;
     }
 
     /**
@@ -89,11 +98,19 @@ class ApiWrapper
         $allowedValues = array('xls', 'xlsx', 'pdf');
 
         if (! in_array($filtered, $allowedValues)) {
-            throw new Exception(sprintf('Document type must be in %s, %s given.', implode('|', $allowedValues), $filtered));
+            throw new InvalidArgumentException(sprintf('Document type must be in %s, %s given.', implode('|', $allowedValues), $filtered));
         }
 
         $this->document_type = $filtered;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDocumentType()
+    {
+        return $this->document_type;
     }
 
     /**
@@ -140,7 +157,7 @@ class ApiWrapper
         $allowedValues = array('none', 'html');
 
         if (! in_array(strtolower(trim($strict)), $allowedValues)) {
-            throw new Exception(sprintf('Validation type must be in %s, %s given.'), implode('|', $allowedValues), $strict);
+            throw new InvalidArgumentException(sprintf('Validation type must be in %s, %s given.'), implode('|', $allowedValues), $strict);
         }
 
         $this->strict = $strict;
