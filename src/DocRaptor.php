@@ -13,18 +13,29 @@ use DocRaptor\Exception\UnprocessableEntityException;
  */
 class ApiWrapper
 {
-
+    // Service and HTTP
     protected $api_key;
-    protected $api_url          = 'docraptor.com/docs';
-    protected $name;
-    protected $test             = false;
-    protected $strict           = 'none';
-    protected $help             = false;
     protected $url_protocol     = 'https';
-    protected $base_url;
+    protected $api_url          = 'docraptor.com/docs';
+
+    // Output document related
+    protected $document_type    = 'pdf';
     protected $document_content;
     protected $document_url;
-    protected $document_type    = 'pdf';
+
+    // Document creation
+    protected $strict           = 'none';
+    protected $javascript       = false;
+
+    // Meta Settings
+    protected $name             = 'default';
+    protected $tag;
+    protected $test             = false;
+    protected $help             = false;
+
+    // Prince Options
+    protected $baseurl;
+
 
 
     /**
@@ -74,14 +85,14 @@ class ApiWrapper
      */
     public function setDocumentType($document_type)
     {
-        $document_type_filtered = strtolower(trim($document_type));
+        $filtered = strtolower(trim($document_type));
         $allowedValues = array('xls', 'xlsx', 'pdf');
 
-        if (! in_array($document_type_filtered, $allowedValues)) {
-            throw new Exception('Value not accepted by method.');
+        if (! in_array($filtered, $allowedValues)) {
+            throw new Exception(sprintf('Document type must be in %s, %s given.', implode('|', $allowedValues), $filtered));
         }
 
-        $this->document_type = $document_type_filtered;
+        $this->document_type = $filtered;
         return $this;
     }
 
@@ -92,6 +103,16 @@ class ApiWrapper
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @param string $tag
+     * @return $this
+     */
+    public function setTag($tag)
+    {
+        $this->tag = $tag;
         return $this;
     }
 
@@ -119,10 +140,20 @@ class ApiWrapper
         $allowedValues = array('none', 'html');
 
         if (! in_array(strtolower(trim($strict)), $allowedValues)) {
-            throw new Exception('Value not accepted by method.');
+            throw new Exception(sprintf('Validation type must be in %s, %s given.'), implode('|', $allowedValues), $strict);
         }
 
         $this->strict = $strict;
+        return $this;
+    }
+
+    /**
+     * @param boolean $javascript
+     * @return $this
+     */
+    public function setJavascript($javascript)
+    {
+        $this->javascript = $javascript;
         return $this;
     }
 
@@ -132,7 +163,7 @@ class ApiWrapper
      */
     public function setHelp($help = false)
     {
-        $this->help = (bool)$help;
+        $this->help = (bool) $help;
         return $this;
     }
 
@@ -147,12 +178,14 @@ class ApiWrapper
     }
 
     /**
-     * @param string $base_url
+     * Prince option, sets base url for assets
+     *
+     * @param string $baseurl
      * @return $this
      */
-    public function setBaseUrl($base_url)
+    public function setBaseurl($baseurl)
     {
-        $this->base_url = $base_url;
+        $this->baseurl = $baseurl;
         return $this;
     }
 
@@ -178,13 +211,15 @@ class ApiWrapper
                 'user_credentials'   => $this->api_key,
                 'doc[document_type]' => $this->document_type,
                 'doc[name]'          => $this->name,
+                'doc[tag]'           => $this->tag,
                 'doc[help]'          => $this->help,
                 'doc[test]'          => $this->test,
-                'doc[strict]'        => $this->strict
+                'doc[strict]'        => $this->strict,
+                'doc[javascript]'    => $this->javascript,
             );
 
-            if (!empty($this->base_url)) {
-                $fields['doc[prince_options][base_url]'] = $this->base_url;
+            if (!empty($this->baseurl)) {
+                $fields['doc[prince_options][baseurl]'] = $this->baseurl;
             }
 
             if (!empty($this->document_content)) {
@@ -203,7 +238,7 @@ class ApiWrapper
             $result = curl_exec($ch);
 
             if (!$result) {
-                throw new Exception('Curl error: ' . curl_error($ch));
+                throw new Exception(sprintf('Curl error: %s', curl_error($ch)));
             }
 
             $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
