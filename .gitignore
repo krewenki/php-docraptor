@@ -1,0 +1,8 @@
+# stupid OSX files
+.DS_STORE
+
+# composer executable
+composer.phar
+
+# composer assets
+/vendor
