@@ -140,7 +140,6 @@ class ApiWrapper
      */
     public function setTest($test = false)
     {
-        // Strict type check, needs to be conservative
         $flag = (false === $test) ? true : false;
         $this->test = $flag;
         return $this;
@@ -191,7 +190,6 @@ class ApiWrapper
      */
     public function setHelp($help = false)
     {
-        // Strict type check, needs to be conservative
         $flag = (false === $help) ? true : false;
         $this->help = $flag;
         return $this;
