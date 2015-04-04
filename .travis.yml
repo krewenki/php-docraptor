@@ -1,8 +1,8 @@
 language: php
 php:
   - 5.5
-script: phpunit
+script: vendor/bin/phpunit
 before_install:
   - composer self-update
 before_script:
-  - composer install
+  - composer install -vv
