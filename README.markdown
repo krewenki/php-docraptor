@@ -1,4 +1,4 @@
-![travis](https://travis-ci.org/expectedbehavior/php-docraptor.svg)
+[![Build Status](https://travis-ci.org/expectedbehavior/php-docraptor.svg?branch=master)](https://travis-ci.org/expectedbehavior/php-docraptor)
 
 #PHP-DocRaptor
 
