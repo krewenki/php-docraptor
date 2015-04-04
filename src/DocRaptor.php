@@ -1,11 +1,13 @@
 <?php namespace DocRaptor;
 
+use DocRaptor\Exception\MissingAPIKeyException;
 use Exception;
 use DocRaptor\Exception\BadRequestException;
 use DocRaptor\Exception\ForbiddenException;
 use DocRaptor\Exception\UnauthorizedException;
 use DocRaptor\Exception\UnexpectedValueException;
 use DocRaptor\Exception\UnprocessableEntityException;
+use InvalidArgumentException;
 
 /**
  * Class ApiWrapper
@@ -52,10 +54,18 @@ class ApiWrapper
      * @param string $api_key
      * @return $this
      */
-    public function setAPIKey($api_key)
+    public function setApiKey($api_key)
     {
         $this->api_key = $api_key;
         return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getApiKey()
+    {
+        return $this->api_key;
     }
 
     /**
@@ -89,11 +99,19 @@ class ApiWrapper
         $allowedValues = array('xls', 'xlsx', 'pdf');
 
         if (! in_array($filtered, $allowedValues)) {
-            throw new Exception(sprintf('Document type must be in %s, %s given.', implode('|', $allowedValues), $filtered));
+            throw new InvalidArgumentException(sprintf('Document type must be in %s, %s given.', implode('|', $allowedValues), $filtered));
         }
 
         $this->document_type = $filtered;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDocumentType()
+    {
+        return $this->document_type;
     }
 
     /**
@@ -122,8 +140,17 @@ class ApiWrapper
      */
     public function setTest($test = false)
     {
-        $this->test = (bool)$test;
+        $flag = (false === $test) ? true : false;
+        $this->test = $flag;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getTest()
+    {
+        return $this->test;
     }
 
     /**
@@ -140,7 +167,7 @@ class ApiWrapper
         $allowedValues = array('none', 'html');
 
         if (! in_array(strtolower(trim($strict)), $allowedValues)) {
-            throw new Exception(sprintf('Validation type must be in %s, %s given.'), implode('|', $allowedValues), $strict);
+            throw new InvalidArgumentException(sprintf('Validation type must be in %s, %s given.', implode('|', $allowedValues), $strict));
         }
 
         $this->strict = $strict;
@@ -163,8 +190,17 @@ class ApiWrapper
      */
     public function setHelp($help = false)
     {
-        $this->help = (bool) $help;
+        $flag = (false === $help) ? true : false;
+        $this->help = $flag;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHelp()
+    {
+        return $this->help;
     }
 
     /**
@@ -195,11 +231,7 @@ class ApiWrapper
      * @param bool|string $filename
      * @return bool|mixed
      * @throws Exception
-     * @throws BadRequestException
-     * @throws ForbiddenException
-     * @throws UnauthorizedException
-     * @throws UnexpectedValueException
-     * @throws UnprocessableEntityException
+     * @throws MissingAPIKeyException
      */
     public function fetchDocument($filename = false)
     {
