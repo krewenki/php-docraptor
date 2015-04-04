@@ -1,13 +1,13 @@
 <?php namespace DocRaptor;
 
-use DocRaptor\Exception\MissingAPIKeyException;
 use Exception;
+use InvalidArgumentException;
 use DocRaptor\Exception\BadRequestException;
 use DocRaptor\Exception\ForbiddenException;
+use DocRaptor\Exception\MissingAPIKeyException;
 use DocRaptor\Exception\UnauthorizedException;
 use DocRaptor\Exception\UnexpectedValueException;
 use DocRaptor\Exception\UnprocessableEntityException;
-use InvalidArgumentException;
 
 /**
  * Class ApiWrapper

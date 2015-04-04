@@ -1,6 +1,5 @@
 <?php namespace DocRaptor\Exception;
 
-
 class ForbiddenException extends RuntimeException
 {
     public function __construct()
