@@ -1,5 +1,6 @@
 <?php namespace DocRaptor;
 
+use DocRaptor\Exception\MissingAPIKeyException;
 use Exception;
 use DocRaptor\Exception\BadRequestException;
 use DocRaptor\Exception\ForbiddenException;
@@ -139,8 +140,18 @@ class ApiWrapper
      */
     public function setTest($test = false)
     {
-        $this->test = (bool)$test;
+        // Strict type check, needs to be conservative
+        $flag = (false === $test) ? true : false;
+        $this->test = $flag;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getTest()
+    {
+        return $this->test;
     }
 
     /**
@@ -157,7 +168,7 @@ class ApiWrapper
         $allowedValues = array('none', 'html');
 
         if (! in_array(strtolower(trim($strict)), $allowedValues)) {
-            throw new InvalidArgumentException(sprintf('Validation type must be in %s, %s given.'), implode('|', $allowedValues), $strict);
+            throw new InvalidArgumentException(sprintf('Validation type must be in %s, %s given.', implode('|', $allowedValues), $strict));
         }
 
         $this->strict = $strict;
@@ -180,8 +191,18 @@ class ApiWrapper
      */
     public function setHelp($help = false)
     {
-        $this->help = (bool) $help;
+        // Strict type check, needs to be conservative
+        $flag = (false === $help) ? true : false;
+        $this->help = $flag;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHelp()
+    {
+        return $this->help;
     }
 
     /**
@@ -212,11 +233,7 @@ class ApiWrapper
      * @param bool|string $filename
      * @return bool|mixed
      * @throws Exception
-     * @throws BadRequestException
-     * @throws ForbiddenException
-     * @throws UnauthorizedException
-     * @throws UnexpectedValueException
-     * @throws UnprocessableEntityException
+     * @throws MissingAPIKeyException
      */
     public function fetchDocument($filename = false)
     {

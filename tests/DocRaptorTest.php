@@ -40,7 +40,35 @@ class DocRaptorTest extends PHPUnit_Framework_TestCase
 
     public function testCaseOfDocTypeDoesNotMatter()
     {
-        $this->docRaptor->setDocumentType('XLS');
+        $this->docRaptor->setDocumentType('xLS');
         $this->assertEquals('xls', $this->docRaptor->getDocumentType());
+    }
+
+    public function testAllowOnlyStrictBoolToToggleTestFlag()
+    {
+        $this->docRaptor->setTest('true');
+        $this->assertEquals(false, $this->docRaptor->getTest());
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testNoInvalidValidationTypesAllowed()
+    {
+        $this->docRaptor->setStrict(false);
+    }
+
+    public function testAllowOnlyStrictBoolToToggleHelpFlag()
+    {
+        $this->docRaptor->setHelp('true');
+        $this->assertEquals(false, $this->docRaptor->getHelp());
+    }
+
+    /**
+     * @expectedException \DocRaptor\Exception\MissingAPIKeyException
+     */
+    public function testCallingFetchDocumentWhenApiKeyIsMissingThrowsException()
+    {
+        $this->docRaptor->fetchDocument();
     }
 }
