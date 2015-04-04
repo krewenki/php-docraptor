@@ -1,3 +1,5 @@
+![travis](https://travis-ci.org/expectedbehavior/php-docraptor.svg)
+
 #PHP-DocRaptor
 
 PHP-DocRaptor is a simple API wrapper for [DocRaptor.com](https://docraptor.com/).
