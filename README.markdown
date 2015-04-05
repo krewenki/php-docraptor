@@ -16,18 +16,20 @@ This library is PSR-4 autoloading compliant, you can install it via composer. Ju
 Then run `composer update` resp. `composer install`.
 
 ##Usage
-Import the namespace.
+Import the classes.
 
+    use DocRaptor\HttpClient;
     use DocRaptor\ApiWrapper;
 
 Use the wrapper.
 
-    $docRaptor = new ApiWrapper($api_key);
+    $httpClient= new HttpClient();
+    $docRaptor = new ApiWrapper($httpClient, $api_key); // Or ommit the API key and pass it in via setter
     $docRaptor->setDocumentContent('<h1>Hello!</h1>')->setDocumentType('pdf')->setTest(true)->setName('output.pdf');
     $file = $docRaptor->fetchDocument();
 
 Optionally, the fetchDocument() method takes a filename as an argument.  If you provide
-a filename, the class will attempt to write the returned value to the file you provided.
+a filename, the class will attempt to write the returned value to the path you provided.
 
 ##Options
 
