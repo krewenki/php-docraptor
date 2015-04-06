@@ -13,13 +13,13 @@ class DocRaptorTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $httpClientMock = new HttpClientMock();
-        $this->docRaptor = new ApiWrapper($httpClientMock);
+        $this->docRaptor = new ApiWrapper(null, $httpClientMock);
     }
 
     public function testCanSetApiKeyViaConstructor()
     {
         $httpClientMock = new HttpClientMock();
-        $docRaptor = new ApiWrapper($httpClientMock, 'my-key');
+        $docRaptor = new ApiWrapper('my-key', $httpClientMock);
         $this->assertEquals('my-key', $docRaptor->getApiKey());
     }
 
