@@ -41,13 +41,17 @@ class ApiWrapper
 
 
     /**
-     * @param HttpTransferInterface $httpClient
      * @param string|null $api_key
+     * @param HttpTransferInterface $httpClient
      */
-    public function __construct(HttpTransferInterface $httpClient, $api_key = null)
+    public function __construct($api_key = null, HttpTransferInterface $httpClient = null)
     {
         if (!is_null($api_key)) {
             $this->api_key = $api_key;
+        }
+
+        if (is_null($httpClient)) {
+            $httpClient = new HttpClient();
         }
 
         $this->httpClient = $httpClient;
@@ -158,8 +162,6 @@ class ApiWrapper
 
     /**
      * Toggle validation of HTML by DocRaptor
-     *
-     * @todo should probably just be a bool flag
      *
      * @param string $strict none: no validation, html: errors out on non-parsable markup
      * @return $this
