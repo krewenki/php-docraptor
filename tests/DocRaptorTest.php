@@ -1,6 +1,7 @@
 <?php
 
 use DocRaptor\ApiWrapper;
+use DocRaptor\HttpClientMock;
 
 class DocRaptorTest extends PHPUnit_Framework_TestCase
 {
@@ -11,18 +12,26 @@ class DocRaptorTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->docRaptor = new ApiWrapper();
+        $httpClientMock = new HttpClientMock();
+        $this->docRaptor = new ApiWrapper(null, $httpClientMock);
     }
 
     public function testCanSetApiKeyViaConstructor()
     {
-        $docRaptor = new ApiWrapper('my-key');
+        $httpClientMock = new HttpClientMock();
+        $docRaptor = new ApiWrapper('my-key', $httpClientMock);
         $this->assertEquals('my-key', $docRaptor->getApiKey());
     }
 
     public function testCanConstructWithoutApiKey()
     {
         $this->assertNull($this->docRaptor->getApiKey());
+    }
+
+    public function testCanSetApiKeyViaSetter()
+    {
+        $this->docRaptor->setApiKey('my-key');
+        $this->assertEquals('my-key', $this->docRaptor->getApiKey());
     }
 
     public function testDefaultDocumentTypeIsPdf()
@@ -70,5 +79,40 @@ class DocRaptorTest extends PHPUnit_Framework_TestCase
     public function testCallingFetchDocumentWhenApiKeyIsMissingThrowsException()
     {
         $this->docRaptor->fetchDocument();
+    }
+
+    /**
+     * @expectedException \DocRaptor\Exception\MissingContentException
+     */
+    public function testCallingFetchDocumentWithoutContentThrowsException()
+    {
+        $this->docRaptor->setApiKey('my-key');
+        $this->docRaptor->fetchDocument();
+    }
+
+    public function testFetchDocumentReturnsResultWhenContentIsGiven()
+    {
+        $this->docRaptor->setApiKey('my-key');
+        $this->docRaptor->setDocumentContent('test');
+        $result = $this->docRaptor->fetchDocument();
+        $this->assertEquals('success', $result);
+    }
+
+    public function testFetchDocumentReturnsResultWhenUrlIsGiven()
+    {
+        $this->docRaptor->setApiKey('my-key');
+        $this->docRaptor->setDocumentUrl('test');
+        $result = $this->docRaptor->fetchDocument();
+        $this->assertEquals('success', $result);
+    }
+
+    public function testFileIsWrittenWhenFilenameIsPassed()
+    {
+        $this->docRaptor->setApiKey('my-key');
+        $this->docRaptor->setDocumentContent('test');
+        $result = $this->docRaptor->fetchDocument('test.txt');
+        $this->assertFileExists('test.txt');
+        $this->assertEquals(true, $result);
+        $this->assertStringEqualsFile('test.txt', 'success');
     }
 }

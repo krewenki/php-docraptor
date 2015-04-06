@@ -2,12 +2,8 @@
 
 use Exception;
 use InvalidArgumentException;
-use DocRaptor\Exception\BadRequestException;
-use DocRaptor\Exception\ForbiddenException;
 use DocRaptor\Exception\MissingAPIKeyException;
-use DocRaptor\Exception\UnauthorizedException;
-use DocRaptor\Exception\UnexpectedValueException;
-use DocRaptor\Exception\UnprocessableEntityException;
+use DocRaptor\Exception\MissingContentException;
 
 /**
  * Class ApiWrapper
@@ -15,6 +11,11 @@ use DocRaptor\Exception\UnprocessableEntityException;
  */
 class ApiWrapper
 {
+    /**
+     * @var HttpTransferInterface
+     */
+    protected $httpClient;
+
     // Service and HTTP
     protected $api_key;
     protected $url_protocol     = 'https';
@@ -39,15 +40,21 @@ class ApiWrapper
     protected $baseurl;
 
 
-
     /**
      * @param string|null $api_key
+     * @param HttpTransferInterface $httpClient
      */
-    public function __construct($api_key = null)
+    public function __construct($api_key = null, HttpTransferInterface $httpClient = null)
     {
         if (!is_null($api_key)) {
             $this->api_key = $api_key;
         }
+
+        if (is_null($httpClient)) {
+            $httpClient = new HttpClient();
+        }
+
+        $this->httpClient = $httpClient;
     }
 
     /**
@@ -140,7 +147,7 @@ class ApiWrapper
      */
     public function setTest($test = false)
     {
-        $flag = (false === $test) ? true : false;
+        $flag = (true === $test) ? true : false;
         $this->test = $flag;
         return $this;
     }
@@ -155,8 +162,6 @@ class ApiWrapper
 
     /**
      * Toggle validation of HTML by DocRaptor
-     *
-     * @todo should probably just be a bool flag
      *
      * @param string $strict none: no validation, html: errors out on non-parsable markup
      * @return $this
@@ -190,7 +195,7 @@ class ApiWrapper
      */
     public function setHelp($help = false)
     {
-        $flag = (false === $help) ? true : false;
+        $flag = (true === $help) ? true : false;
         $this->help = $flag;
         return $this;
     }
@@ -230,13 +235,17 @@ class ApiWrapper
      *
      * @param bool|string $filename
      * @return bool|mixed
-     * @throws Exception
      * @throws MissingAPIKeyException
+     * @throws MissingContentException
      */
     public function fetchDocument($filename = false)
     {
         if (!$this->api_key) {
             throw new MissingAPIKeyException();
+        }
+
+        if (!isset($this->document_content) && !isset($this->document_url)) {
+            throw new MissingContentException();
         }
 
         $uri = sprintf('%s://%s', $this->url_protocol, $this->api_url);
@@ -262,41 +271,11 @@ class ApiWrapper
             $fields['doc[document_url]'] = $this->document_url;
         }
 
-        $queryString = http_build_query($fields);
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $uri);
-        curl_setopt($ch, CURLOPT_POST, count($fields));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $queryString);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
-
-        if (!$result) {
-            throw new Exception(sprintf('Curl error: %s', curl_error($ch)));
-        }
-
-        $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if ($httpStatusCode != 200) {
-            switch ($httpStatusCode) {
-                case 400:
-                    throw new BadRequestException();
-                case 401:
-                    throw new UnauthorizedException();
-                case 403:
-                    throw new ForbiddenException();
-                case 422:
-                    throw new UnprocessableEntityException();
-                default:
-                    throw new UnexpectedValueException($httpStatusCode);
-            }
-        }
+        $result = $this->httpClient->doPost($uri, $fields);
 
         if ($filename) {
             file_put_contents($filename, $result);
         }
-
-        curl_close($ch);
 
         return $filename ? true : $result;
     }
