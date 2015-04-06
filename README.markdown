@@ -6,24 +6,24 @@ PHP-DocRaptor is a simple API wrapper for [DocRaptor.com](https://docraptor.com/
 You will need a DocRaptor account before you can use this library, as it requires a valid API key.
 
 ##Dependencies
-This wrapper requires PHP 5.4 or newer. PHP 5.4 support will be dropped when it reaches EOL, we strongly advice to migrate your projects to PHP 5.6. Other than that, only the PHP curl extention is needed.
+This wrapper requires PHP 5.4 or newer. PHP 5.4 support will be dropped when it reaches EOL. We strongly advise to migrate your projects to PHP 5.6. Other than that, only the PHP curl extension is needed.
 
-At the current moment, this library also still works with PHP 5.3 but we don't guarantee that for any future releases.
+At the moment, this library still works with PHP 5.3, but we don't guarantee that for any future releases.
 
 ##Installation
 
-This library is PSR-4 autoloading compliant, you can install it via composer. Just require it in your `composer.json`.
+This library is PSR-4 autoloading compliant and you can install it via composer. Just require it in your `composer.json`.
 
     "require": {
         "expectedbehavior/php-docraptor": "1.0.0"
     }
-    
+
 Then run `composer update` resp. `composer install`.
 
 ##Usage
 ###Simple
 
-    $docRaptor = new DocRaptor\ApiWrapper($api_key); // Or ommit the API key and pass it in via setter
+    $docRaptor = new DocRaptor\ApiWrapper($api_key); // Or omit the API key and pass it in via setter
     $docRaptor->setDocumentContent('<h1>Hello!</h1>')->setDocumentType('pdf')->setTest(true)->setName('output.pdf');
     $file = $docRaptor->fetchDocument();
 
@@ -41,8 +41,8 @@ The provided `HttpClient` is a very simple domain specific curl wrapper that ext
 ##Options
 
 ###HTTPS or HTTP
-By default, PHP-DocRaptor submits requests over https.  You can choose to submit via http, if that's your preference, by passing an argument to the *setSecure()* method (true for https, false for http):
+By default, PHP-DocRaptor submits requests over https.  You can choose to submit via http by passing an argument to the *setSecure()* method (true for https, false for http):
 
 	$docRaptor->setSecure(false);
-	
+
 NB! It IS not secure, you're basically broadcasting your api key over the network.
